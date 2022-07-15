@@ -1,14 +1,19 @@
 const path = require("path")
+// 导入插件
+const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 
 module.exports = {
   // 入口
   entry: "./src/main.js",//相对路径
   // 输出
   output: {
-    // 输出路径
+    // 输出路径,所有打包的文件输出目录
     path: path.resolve(__dirname, "dist"),//绝对路径
-    // 输出名称
-    filename: "main.js"
+    // 输出名称,入口文件打包输出的文件名
+    filename: "static/js/main.js",
+    // 自动清空上次打包结果
+    // 打包前将path目录清空
+    clean: true,
   },
   // 加载器
   module: {
@@ -34,11 +39,49 @@ module.exports = {
           "css-loader",
           // 将less文件编译成css文件
           "less-loader"],
+      },
+      {
+        test: /\.(png|jpe?g|gif|webp|svg)$/,
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            // 小于10kb转base64
+            // 减少请求数量，体积会变大一点
+            maxSize: 10 * 1024 // 10kb
+          }
+        },
+        generator: {
+          //输出图片名称 :10代表取前十位hash值
+          filename: 'static/images/[hash:10][ext][query]'
+        }
+      },
+      {
+        test: /\.(ttf|woff2?|mp3|mp4|avi)$/,
+        // 原封不动输出
+        type: 'asset/resource',
+        generator: {
+          //输出名称 
+          filename: 'static/media/[hash:10][ext][query]'
+        }
+      },
+      {
+        test: /\.(ttf|woff2?|mp3|mp4|avi)$/,
+        // 原封不动输出
+        type: 'asset/resource',
+        generator: {
+          //输出名称 
+          filename: 'static/media/[hash:10][ext][query]'
+        }
       }
     ],
   },
   // 插件
-  plugins: [],
+  plugins: [
+    new ESLintWebpackPlugin({
+      // 指定检查文件的根目录
+      context: path.resolve(__dirname, "src")
+    })
+  ],
   // 模式
   mode: "development",
 };
