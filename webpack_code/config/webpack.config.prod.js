@@ -1,6 +1,7 @@
 const path = require("path")
 // 导入插件
 const ESLintWebpackPlugin = require("eslint-webpack-plugin");
+const HtmlwebpackPlugin = require("html-webpack-plugin")
 
 module.exports = {
   // 入口
@@ -65,13 +66,12 @@ module.exports = {
         }
       },
       {
-        test: /\.(ttf|woff2?|mp3|mp4|avi)$/,
-        // 原封不动输出
-        type: 'asset/resource',
-        generator: {
-          //输出名称 
-          filename: 'static/media/[hash:10][ext][query]'
-        }
+        test: /\.js$/,
+        exclude: /node_modules/, // 排除node_modules代码不编译
+        loader: "babel-loader",
+        // options: {
+        //   presets: ["@babel/preset-env"]
+        // }
       }
     ],
   },
@@ -80,8 +80,18 @@ module.exports = {
     new ESLintWebpackPlugin({
       // 指定检查文件的根目录
       context: path.resolve(__dirname, "src")
+    }),
+    new HtmlwebpackPlugin({
+      // 模板
+      template: "./public/index.html"
     })
   ],
+  // 开发服务器
+  devServer: {
+    host: "localhost", // 启动服务器域名
+    port: "3000", // 启动服务器端口号
+    open: true, // 是否自动打开浏览器
+  },
   // 模式
   mode: "development",
 };
