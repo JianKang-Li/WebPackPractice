@@ -2,6 +2,29 @@ const path = require("path")
 // 导入插件
 const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 const HtmlwebpackPlugin = require("html-webpack-plugin")
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+
+// 获取处理样式loader
+function getStyleLoader(pre) {
+  return [
+    MiniCssExtractPlugin.loader,
+    "css-loader",
+    {
+      loader: "postcss-loader",
+      options: {
+        postcssOptions: {
+          plugins: [
+            "postcss-preset-env", // 能解决大多数样式兼容性问题
+          ],
+        },
+      },
+    },
+    pre,
+  ].filter(Boolean);
+}
+
+
 
 module.exports = {
   // 入口
@@ -9,7 +32,7 @@ module.exports = {
   // 输出
   output: {
     // 输出路径,所有打包的文件输出目录
-    path: path.resolve(__dirname, "dist"),//绝对路径
+    path: path.resolve(__dirname, "../dist"),//绝对路径
     // 输出名称,入口文件打包输出的文件名
     filename: "static/js/main.js",
     // 自动清空上次打包结果
@@ -23,23 +46,25 @@ module.exports = {
         //只检测xxx文件
         test: /\.css$/,
         // 使用什么loader，执行顺序（从下到上）
-        use: [
-          // 将js中的css通过创建style标签添加到html文件中生效
-          "style-loader",
-          // 将css资源编译成commonjs的模块到js中
-          "css-loader"],
+        // use: [
+        //   // 将js中的css通过创建style标签添加到html文件中生效
+        //   "style-loader",
+        //   // 将css资源编译成commonjs的模块到js中
+        //   "css-loader"],
+        use: getStyleLoader(),
       },
       {
         //只检测xxx文件
         test: /\.less$/,
         // 使用什么loader，执行顺序（从下到上）
-        use: [
-          // 将js中的css通过创建style标签添加到html文件中生效
-          "style-loader",
-          // 将css资源编译成commonjs的模块到js中
-          "css-loader",
-          // 将less文件编译成css文件
-          "less-loader"],
+        // use: [
+        //   // 将js中的css通过创建style标签添加到html文件中生效
+        //   "style-loader",
+        //   // 将css资源编译成commonjs的模块到js中
+        //   "css-loader",
+        //   // 将less文件编译成css文件
+        //   "less-loader"],
+        use: getStyleLoader("less-loader"),
       },
       {
         test: /\.(png|jpe?g|gif|webp|svg)$/,
@@ -79,19 +104,29 @@ module.exports = {
   plugins: [
     new ESLintWebpackPlugin({
       // 指定检查文件的根目录
-      context: path.resolve(__dirname, "src")
+      context: path.resolve(__dirname, "../src")
     }),
     new HtmlwebpackPlugin({
       // 模板
-      template: "./public/index.html"
-    })
+      template: path.resolve(__dirname, "../public/index.html")
+    }),
+    // 提取css成单独文件
+    new MiniCssExtractPlugin({
+      // 定义输出文件名和目录
+      filename: "static/css/main.css",
+    }),
+    new CssMinimizerPlugin(),
   ],
   // 开发服务器
-  devServer: {
-    host: "localhost", // 启动服务器域名
-    port: "3000", // 启动服务器端口号
-    open: true, // 是否自动打开浏览器
+  // devServer: {
+  //   host: "localhost", // 启动服务器域名
+  //   port: "3000", // 启动服务器端口号
+  //   open: true, // 是否自动打开浏览器
+  // },
+  // 关闭warning
+  performance: {
+    hints: false
   },
   // 模式
-  mode: "development",
+  mode: "production",
 };

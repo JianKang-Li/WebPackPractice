@@ -15,7 +15,8 @@ module.exports = {
     filename: "static/js/main.js",
     // 自动清空上次打包结果
     // 打包前将path目录清空
-    clean: true,
+    // 开发模式下没有输出则不需要清除
+    // clean: true,
   },
   // 加载器
   module: {
@@ -84,7 +85,7 @@ module.exports = {
     }),
     new HtmlwebpackPlugin({
       // 模板
-      template: "../public/index.html"
+      template: path.resolve(__dirname, "../public/index.html")
     })
   ],
   // 开发服务器
