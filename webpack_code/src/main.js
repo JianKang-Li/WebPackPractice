@@ -4,15 +4,26 @@ import count from "./js/count"
 import "./css/index.css"
 import "./less/index.less"
 import "./css/iconfont.css"
-import { mul } from "./js/math"
+// import { mul } from "./js/math"
 console.log(count(1, 2, 3))
 console.log(sum(1, 2, 3, 4, 5))
 
-console.log(mul(3, 3))
+// console.log(mul(3, 3))
 let result1 = count(2, 1);
 console.log(result1);
 let result2 = sum(1, 2, 3);
 console.log(result2);
+
+document.getElementById("btn").onclick = function () {
+  // Eslint不识别动态导入语法
+  // /* webpackChunkName:"math" */ webpack魔法命名
+  import(/*webpackChunkName:"math"*/"./js/math").then(({ mul }) => {
+    console.log(mul(3, 3))
+  }).catch((error) => {
+    console.log("错误", error)
+  })
+}
+
 
 // js实现热模块替换
 if (module.hot) {

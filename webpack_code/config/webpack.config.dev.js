@@ -16,7 +16,11 @@ module.exports = {
     // path: path.resolve(__dirname, "dist"),//绝对路径
     path: undefined,//开发模式无输出
     // 输出名称,入口文件打包输出的文件名
-    filename: "static/js/main.js",
+    filename: "static/js/[name].js",
+    // 给打包的动态加载文件命名
+    chunkFilename: "static/js/[name].chunk.js",
+    // 统一给静态资源命名通过type:"asset"处理
+    assetModuleFilename: 'static/media/[hash:10][ext][query]',
     // 自动清空上次打包结果
     // 打包前将path目录清空
     // 开发模式下没有输出则不需要清除
@@ -59,19 +63,19 @@ module.exports = {
               maxSize: 10 * 1024 // 10kb
             }
           },
-          generator: {
-            //输出图片名称 :10代表取前十位hash值
-            filename: 'static/images/[hash:10][ext][query]'
-          }
+          // generator: {
+          //   //输出图片名称 :10代表取前十位hash值
+          //   filename: 'static/images/[hash:10][ext][query]'
+          // }
         },
         {
           test: /\.(ttf|woff2?|mp3|mp4|avi)$/,
           // 原封不动输出
           type: 'asset/resource',
-          generator: {
-            //输出名称 
-            filename: 'static/media/[hash:10][ext][query]'
-          }
+          // generator: {
+          //   //输出名称 
+          //   filename: 'static/media/[hash:10][ext][query]'
+          // }
         },
         {
           test: /\.js$/,

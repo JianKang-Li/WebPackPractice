@@ -7,6 +7,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
+const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
 
 // cpu核数
 const threads = os.cpus().length;
@@ -41,7 +42,11 @@ module.exports = {
     // 输出路径,所有打包的文件输出目录
     path: path.resolve(__dirname, "../dist"),//绝对路径
     // 输出名称,入口文件打包输出的文件名
-    filename: "static/js/main.js",
+    filename: "static/js/[name].js",
+    // 给打包的动态加载文件命名
+    chunkFilename: "static/js/[name].chunk.js",
+    // 统一给静态资源命名通过type:"asset"处理
+    assetModuleFilename: 'static/media/[hash:10][ext][query]',
     // 自动清空上次打包结果
     // 打包前将path目录清空
     clean: true,
@@ -57,7 +62,7 @@ module.exports = {
             test: /\.css$/,
             // 使用什么loader，执行顺序（从下到上）
             // use: [
-            //   // 将js中的css通过创建style标签添加到html文件中生效
+            // _  // 将js中的css通过创建style标签添加到html文件中生效
             //   "style-loader",
             //   // 将css资源编译成commonjs的模块到js中
             //   "css-loader"],
@@ -86,19 +91,19 @@ module.exports = {
                 maxSize: 10 * 1024 // 10kb
               }
             },
-            generator: {
-              //输出图片名称 :10代表取前十位hash值
-              filename: 'static/images/[hash:10][ext][query]'
-            }
+            // generator: {
+            //   //输出图片名称 :10代表取前十位hash值
+            //   filename: 'static/images/[hash:10][ext][query]'
+            // }
           },
           {
             test: /\.(ttf|woff2?|mp3|mp4|avi)$/,
             // 原封不动输出
             type: 'asset/resource',
-            generator: {
-              //输出名称 
-              filename: 'static/media/[hash:10][ext][query]'
-            }
+            // generator: {
+            //   //输出名称 
+            //   filename: 'static/media/[hash:10][ext][query]'
+            // }
           },
           {
             test: /\.js$/,
@@ -150,7 +155,8 @@ module.exports = {
     // 提取css成单独文件
     new MiniCssExtractPlugin({
       // 定义输出文件名和目录
-      filename: "static/css/main.css",
+      filename: "static/css/[name].css",
+      chunkFilename: "static/css/[name].chunk.css"
     }),
     // css压缩
     // new CssMinimizerPlugin(),
@@ -158,6 +164,11 @@ module.exports = {
     // new TerserPlugin({
     //   parallel: threads // 开启多进程
     // })
+    new PreloadWebpackPlugin({
+      rel: 'preload',
+      as: 'script',
+      // rel: 'prefetch' // prefetch兼容性更差
+    })
   ],
   optimization: {
     // 压缩操作
@@ -198,13 +209,12 @@ module.exports = {
         },
       }),
     ],
+    // 代码分割配置
+    splitChunks: {
+      chunks: "all", // 对所有模块都进行分割
+      // 其他内容用默认配置即可
+    },
   },
-  // 开发服务器
-  // devServer: {
-  //   host: "localhost", // 启动服务器域名
-  //   port: "3000", // 启动服务器端口号
-  //   open: true, // 是否自动打开浏览器
-  // },
   // 关闭warning
   performance: {
     hints: false
