@@ -8,6 +8,7 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
 const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
+const WorkboxPlugin = require("workbox-webpack-plugin");
 
 // cpu核数
 const threads = os.cpus().length;
@@ -42,9 +43,9 @@ module.exports = {
     // 输出路径,所有打包的文件输出目录
     path: path.resolve(__dirname, "../dist"),//绝对路径
     // 输出名称,入口文件打包输出的文件名
-    filename: "static/js/[name].js",
-    // 给打包的动态加载文件命名
-    chunkFilename: "static/js/[name].chunk.js",
+    // [contenthash:8]使用contenthash，取8位长度
+    filename: "static/js/[name].[contenthash:8].js", // 入口文件打包输出资源命名方式
+    chunkFilename: "static/js/[name].[contenthash:8].chunk.js", // 动态导入输出资源命名方式
     // 统一给静态资源命名通过type:"asset"处理
     assetModuleFilename: 'static/media/[hash:10][ext][query]',
     // 自动清空上次打包结果
@@ -155,8 +156,8 @@ module.exports = {
     // 提取css成单独文件
     new MiniCssExtractPlugin({
       // 定义输出文件名和目录
-      filename: "static/css/[name].css",
-      chunkFilename: "static/css/[name].chunk.css"
+      filename: "static/css/[name].[contenthash:8].css",
+      chunkFilename: "static/css/[name].[contenthash:8].chunk.css",
     }),
     // css压缩
     // new CssMinimizerPlugin(),
@@ -168,7 +169,14 @@ module.exports = {
       rel: 'preload',
       as: 'script',
       // rel: 'prefetch' // prefetch兼容性更差
-    })
+    }),
+    new WorkboxPlugin.GenerateSW({
+      // 这些选项帮助快速启用 ServiceWorkers
+      // 不允许遗留任何“旧的” ServiceWorkers
+      clientsClaim: true,
+      skipWaiting: true,
+      maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
+    }),
   ],
   optimization: {
     // 压缩操作
@@ -214,10 +222,14 @@ module.exports = {
       chunks: "all", // 对所有模块都进行分割
       // 其他内容用默认配置即可
     },
+    // 提取runtime文件
+    runtimeChunk: {
+      name: (entrypoint) => `runtime~${entrypoint.name}.js`, // runtime文件命名规则
+    },
   },
   // 关闭warning
   performance: {
-    hints: false
+    hints: false,
   },
   // 模式
   mode: "production",

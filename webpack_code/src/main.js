@@ -1,3 +1,4 @@
+import "core-js/es/promise";
 import sum from "./js/sum"
 import count from "./js/count"
 // 要打包就要引入
@@ -24,10 +25,31 @@ document.getElementById("btn").onclick = function () {
   })
 }
 
-
 // js实现热模块替换
 if (module.hot) {
   // 判断是否支持热模块替换
   module.hot.accept("./js/count")
   module.hot.accept("./js/sum")
+}
+
+// 添加promise代码
+const promise = Promise.resolve();
+promise.then(() => {
+  console.log("hello promise");
+});
+
+const arr = [1, 2, 3, 4]
+console.log(arr.includes(1))
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/service-worker.js")
+      .then((registration) => {
+        console.log("SW registered: ", registration);
+      })
+      .catch((registrationError) => {
+        console.log("SW registration failed: ", registrationError);
+      });
+  });
 }
