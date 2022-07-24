@@ -1,4 +1,4 @@
-// webpack.prod.js
+// webpack.config.js
 const path = require("path");
 const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -181,6 +181,18 @@ module.exports = {
     ],
     splitChunks: {
       chunks: "all",
+      cacheGroup: {
+        vue: {
+          test: /[\\/]node_modules[\\/]vue(.*)?[\\/]/,
+          name: "vue-chunk",
+          priority: 40,
+        },
+        lib: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "libs-chunk",
+          priority: 20,
+        }
+      }
     },
     runtimeChunk: {
       name: (entrypoint) => `runtime~${entrypoint.name}`,
@@ -191,10 +203,8 @@ module.exports = {
   },
   mode: isProduction ? "production" : "development",
   devtool: isProduction ? "source-map" : "cheap-module-source-map",
-  performance: {
-    hints: false,
-    maxAssetSize: 300 * 1024, // 整数类型（以字节为单位）
-  },
+  // 关闭性能分析
+  performance: false,
   devServer: {
     open: true,
     host: "localhost",
