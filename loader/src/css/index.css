@@ -1,0 +1,26 @@
+.box1 {
+  display: flex;
+  width: 500px;
+  height: 700px;
+  background-color: pink;
+  background-image: url("../images/lyf2.jpg");
+  background-size: cover;
+}
+
+.box2 {
+  display: flex;
+  width: 500px;
+  height: 700px;
+  background-color: pink;
+  background-image: url("../images/刘亦菲.jpg");
+  background-size: cover;
+}
+
+.box3 {
+  display: flex;
+  width: 500px;
+  height: 700px;
+  background-color: pink;
+  background-image: url("../images/lyf3.jpg");
+  background-size: cover;
+}

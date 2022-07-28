@@ -28,6 +28,22 @@ module.exports = {
           author: "ljk"
         }
       },
+      {
+        test: /\.js$/,
+        loader: "./loaders/babel-loader",
+        options: {
+          presets: ["@babel/preset-env"],
+        }
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/,
+        loader: "./loaders/file-loader",
+        type: "javascript/auto", // 解决图片重复打包问题
+      },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"]
+      },
     ]
   },
   plugins: [
