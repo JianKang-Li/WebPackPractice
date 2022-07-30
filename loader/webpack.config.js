@@ -1,5 +1,7 @@
 const path = require("path")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
+const TestPlugin = require("./plugins/test-plugin")
+const BannerWebpackPlugin = require("./plugins/banner-webpack-plugin")
 
 module.exports = {
   entry: "./src/main.js",
@@ -21,13 +23,13 @@ module.exports = {
         // use: ["./loaders/demo/test4", "./loaders/demo/test5", "./loaders/demo/test6"]
         loader: "./loaders/clean-log-loader.js"
       },
-      {
-        test: /\.js$/,
-        loader: "./loaders/banner-loader",
-        options: {
-          author: "ljk"
-        }
-      },
+      // {
+      //   test: /\.js$/,
+      //   loader: "./loaders/banner-loader",
+      //   options: {
+      //     author: "ljk"
+      //   }
+      // },
       {
         test: /\.js$/,
         loader: "./loaders/babel-loader",
@@ -50,7 +52,14 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "public/index.html")
+    }),
+    // new TestPlugin(),
+    new BannerWebpackPlugin({
+      author: "ljk"
     })
   ],
-  mode: "development"
+  performance: {
+    hints: false,
+  },
+  mode: "production"
 }
