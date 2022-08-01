@@ -64,7 +64,7 @@ module.exports = {
     }),
     new CleanWebpackPlugin(),
     new AnalyzeWebpackPlugin(),
-    new InlineChunkWebpackPlugin()
+    new InlineChunkWebpackPlugin([/runtime(.*)\.js$/])
   ],
   performance: {
     hints: false,

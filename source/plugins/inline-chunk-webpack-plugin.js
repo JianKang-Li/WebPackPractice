@@ -2,8 +2,9 @@
 const HtmlWebpackPlugin = require("safe-require")("html-webpack-plugin");
 
 class InlineChunkWebpackPlugin {
+
   constructor(tests) {
-    this.tests = tests;
+    this.tests = tests
   }
 
   apply(compiler) {
@@ -17,10 +18,11 @@ class InlineChunkWebpackPlugin {
         assets.bodyTags = this.getInlineTag(assets.bodyTags, compilation.assets);
       });
 
+      // 删除文件
       hooks.afterEmit.tap("InlineChunkHtmlPlugin", () => {
-        Object.keys(compilation.assets).forEach((assetName) => {
-          if (this.tests.some((test) => assetName.match(test))) {
-            delete compilation.assets[assetName];
+        Object.keys(compilation.assets).forEach((filepath) => {
+          if (this.tests.some((test) => filepath.match(test))) {
+            delete compilation.assets[filepath];
           }
         });
       });
@@ -47,11 +49,13 @@ class InlineChunkWebpackPlugin {
     return tags.map((tag) => {
       if (tag.tagName !== "script") return tag;
 
-      const scriptName = tag.attributes.src;
+      const filepath = tag.attributes.src;
 
-      if (!this.tests.some((test) => scriptName.match(test))) return tag;
+      if (!filepath) return tag;
 
-      return { tagName: "script", innerHTML: assets[scriptName].source(), closeTag: true };
+      if (!this.tests.some((test) => filepath.match(test))) return tag;
+
+      return { tagName: "script", innerHTML: assets[filepath].source(), closeTag: true };
     });
   }
 }
